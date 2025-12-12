@@ -1,30 +1,52 @@
-function lanciaDado() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (Math.random() < 0.2) {
-        reject("Il dado si è incastrato!");
-      } else {
-        const risultato = Math.floor(Math.random() * 6) + 1;
-        resolve(risultato);
-      }
-    }, 3000);
-  });
+const lanciaDado = () => {
+    return new Promise((resolve, reject) => {
+        console.log("sto lanciando il dado...")
+        setTimeout(() => {
+            const isIncastrato = Math.random() < 0.2;
+            if (isIncastrato) {
+                reject("il dado si è incastrato")
+            } else {
+                const risultato = Math.floor(Math.random() * 6) + 1;
+                resolve(risultato);
+            }
+        }, 3000)
+    })
 }
 
-function creaLanciaDado() {
-  let ultimo = null;
+lanciaDado()
+    .then(risultato => console.log(`Il dado ha lanciato:`, risultato))
+    .catch(err => console.error(err));
 
-  return function () {
-    return lanciaDado().then(numero => {
-      if (numero === ultimo) {
-        console.log("Incredibile!");
-      }
-      ultimo = numero;
-      return numero;
-    });
-  };
+
+
+const creaLanciaDado = () => {
+
+    let ultimoLancio = null;
+
+    return function () {
+        return new Promise((resolve, reject) => {
+            console.log("sto lanciando il dado...")
+            setTimeout(() => {
+                const isIncastrato = Math.random() < 0.2;
+                if (isIncastrato) {
+                    ultimoLancio = null;
+                    reject("il dado si è incastrato")
+                } else {
+                    const risultato = Math.floor(Math.random() * 6) + 1;
+                    if(risultato === ultimoLancio){
+                        console.log("incredibile!")
+                    }
+                    ultimoLancio = risultato;
+                    resolve(risultato);
+                }
+            }, 3000)
+        })
+    }
 }
 
-const dado = creaLanciaDado();
+const lanciaDadoConMemoria = creaLanciaDado();
 
-dado().then(console.log).catch(console.error);
+lanciaDadoConMemoria()
+        .then(risultato => console.log(`Il dado ha lanciato:`, risultato))
+        .catch(err => console.error(err));
+
